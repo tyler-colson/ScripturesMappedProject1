@@ -7,6 +7,7 @@ const Scriptures = (function (){
 const BOTTOM_PADDING = "<br /><br />";
 const CLASS_BOOKS = "books";
 const CLASS_VOLUME = "volume";
+const CLASS_BUTTON = "btn";
 const DIV_SCRIPTURES_NAVIGATOR = "scripnav";
 const DIV_SCRIPTURES = "scriptures";
 const REQUEST_GET = "GET";
@@ -29,6 +30,8 @@ let volumes;
 */
 let ajax;
 let bookChapterValid;
+let booksGrid;
+let booksGridContent;
 let cacheBooks;
 let htmlAnchor;
 let htmlDiv;
@@ -40,6 +43,7 @@ let navigateBook;
 let navigateChapter;
 let navigateHome;
 let onHashChanged;
+let volumesGridContent;
 
 
 /*---------------------------------------------------------------------------
@@ -85,6 +89,29 @@ bookChapterValid = function(bookId, chapter){
     return true;
 }
 
+booksGrid = function(volume){
+    return htmlDiv({
+        classKey:  CLASS_BOOKS,
+        content: booksGridContent(volume)
+    });
+};
+
+booksGridContent = function(volume){
+    let gridContent = "";
+
+    volume.books.forEach(function(book){
+        gridContent += htmlLink({
+            classKey: CLASS_BUTTON,
+            id: book.id,
+            href: `#${volume.id}:${book.id}`,
+            content: book.gridName
+        });
+    });
+
+
+    return gridContent;
+}
+
 cacheBooks = function(callback){
     volumes.forEach(volume => {
         let volumeBooks = [];
@@ -103,19 +130,23 @@ cacheBooks = function(callback){
     }
 }
 
+    htmlAnchor = function(volume){
+        return `<a name="v${volume.id}"></a>`;
+    }
+
     htmlDiv = function(parameters){
     let classString = "";
     let contentString = "";
     let idString = "";
 
     if (parameters.classKey !== undefined){
-        classString = `class="${parameters.classKey}"`;
+        classString = ` class="${parameters.classKey}"`;
     }
     if (parameters.content !== undefined){
         contentString = parameters.content;
     }
     if (parameters.id !== undefined){
-        idString = `id="${parameters.id}"`;
+        idString = ` id="${parameters.id}"`;
     }
 
     return `<div${idString}${classString}>${contentString}</div>`;
@@ -132,16 +163,16 @@ cacheBooks = function(callback){
     let idString = "";
 
     if (parameters.classKey !== undefined){
-        classString = `class="${parameters.classKey}"`;
+        classString = ` class="${parameters.classKey}"`;
     }
     if (parameters.content !== undefined){
         contentString = parameters.content;
     }
     if (parameters.href !== undefined){
-        hrefString = `href="${parameters.href}"`;
+        hrefString = ` href="${parameters.href}"`;
     }
     if (parameters.id !== undefined){
-        idString = `id="${parameters.id}"`;
+        idString = ` id="${parameters.id}"`;
     }
 
     return `<a${idString}${classString}${hrefString}>${contentString}</a>`;
@@ -149,7 +180,7 @@ cacheBooks = function(callback){
 };
 
     htmlHashLink = function (hashArguments, content){
-    retrun `<a href="javascript:void(0)" onclick=changeHash(${hashArguments})">${content}</a>`;
+    return `<a href="javascript:void(0)" onclick=changeHash(${hashArguments})">${content}</a>`;
 };
 
 init = function(callback){
@@ -189,12 +220,12 @@ navigateChapter = function(bookId, chapter){
 };
 
 navigateHome = function(volumeId){
-    document.getElementById(DIV_SCRIPTURES).innerHTML = 
-    "<div>Old Testament</div>" +
-    "<div>New Testament</div>" +
-    "<div>Book of Mormon</div>" +
-    "<div>Pearl of Great Price</div>" +
-    "<div>Doctrine and Covenants</div>" + volumeId
+    document.getElementById(DIV_SCRIPTURES).innerHTML = htmlDiv({
+        id: DIV_SCRIPTURES_NAVIGATOR,
+        content: volumesGridContent(volumeId)
+    })
+
+
 };
 
 onHashChanged = function() {
@@ -245,7 +276,21 @@ onHashChanged = function() {
     }
 }
 
+volumesGridContent = function(volumeId){
+    let gridContent = "";
 
+    volumes.forEach(function (volume){
+        if (volumeId === undefined || volumeId === volume.id){
+            gridContent += htmlDiv({
+                classKey: CLASS_VOLUME,
+                content: htmlAnchor(volume) + htmlElement(TAG_HEADERS, volume.fullName)
+            });
+
+            gridContent += booksGrid(volume);
+        }
+    });
+    return gridContent;
+}
 
 
 
