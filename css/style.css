@@ -271,3 +271,8 @@ span.verse {
 li.match {
     background-color: #ffffcc;
 }
+
+
+#map {
+    height: 100%;
+  }

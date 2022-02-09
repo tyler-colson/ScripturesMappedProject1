@@ -11,6 +11,7 @@
 </head>
 <body>
 <div id="header">
+    <div id="crumbs"></div>
     <div id="centerhead">
         <div class="title">The Scriptures, Mapped</div>
         <div class="subtitle">By Tyler Colson</div>   
@@ -19,14 +20,22 @@
 </div>
 
 <div id="content">
-    <div id="scriptures">
-    <div id="map">    
+    <div id="scriptures"></div>
+    <div id="map"></div>
 </div>
 
     
 <script src="js/scriptures.js"></script>
 
 <script type="text/javascript">
+    let map;
+    function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 31.7683, lng: 35.2137 },
+          zoom: 10,
+        });
+      }
+
     function ready(readyListener){
         if (document.readyState !== "loading"){
             readyListener();
@@ -37,10 +46,17 @@
         
     }
 
+    function showLocation(){
+        Scriptures.showLocation(...arguments);
+    }
+
     ready(function (){
         Scriptures.init(()=>{console.log(Scriptures.onHashChanged());});
         window.addEventListener("hashchange", Scriptures.onHashChanged);
     });
+
 </script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD231O4iJ0-b64zlzRtLve-ul2ZKC5Tf_0&callback=initMap"></script>
 </body>
 </html>
